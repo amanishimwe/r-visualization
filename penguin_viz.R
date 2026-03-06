@@ -195,6 +195,83 @@ ggplot(penguins, aes(x = body_mass_g)) +
 
 #===================EXERCISES===================================================
 
+#1. Make a bar plot of species of penguins, where you assign species to the y aesthetic.
+#How is this plot different?
+ggplot(penguins, aes(y=species))+
+  geom_bar()
+# Ans: The graph becomes horizontal
+
+#2. How are the following two plots different?
+#Which aesthetic, color or fill, is more useful for changing the color of bars?
+#====This one only changes the color of the bar line
+ggplot(penguins, aes(x = species)) +
+  geom_bar(color = "red")
+#==========This one changes the color of the entire bar and is thus more favorable
+ggplot(penguins, aes(x = species)) +
+  geom_bar(fill = "red")
+#3. What does the bins argument in geom_histogram() do?
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(bins = 7)
+# The bins argument controls how many bars the histogram is divided into
+
+#=====================Visualization of relationships===========================
+# To visualize a relationship, we need to atleast have two variables mapped to
+# Aesthics of the plot
+#===================Numerical and Categorical Variables=========================
+# To visualize the relationship between a categorical and numerical variable,
+# We can use side by side box plots
+# A boxplot is a type of visual shorthand for measures of position (percentiles)
+# that describe a distribution. It is also useful for identifying potential outliers
+# A boxplot shows:
+#1. Box — covers the middle 50% of data (IQR), with a line at the median
+#2.Dots — individual outliers (points beyond 1.5× IQR from the box edges)
+#3. Whiskers — lines extending to the furthest non-outlier values
+
+ggplot(penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+# Alternatively, we can make density plots with geom_density().
+ggplot(penguins, aes(x = body_mass_g, color = species)) +
+  geom_density(linewidth = 0.75)
+# linewidth controls the thickness of lines in the plot.
+#-------------------------------------------------------------------------------
+ggplot(penguins, aes(x = body_mass_g, color = species, fill = species)) +
+  geom_density(alpha = 0.5)
+
+#======================Two Categorical Variables ===============================
+#We Use stacked bar plots to visualize the relationship between two categorical variables
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar()
+#For example, the following two stacked bar plots both display the relationship
+# between island and species, or specifically, visualizing the distribution of
+#species within each island
+
+#NB to set a relative frquence we add position=fill as argument within the geo_bar()
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+# x = bar variable, fill = color variable; use labs(y = "proportion")
+# to override default "count" label
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill") +
+  labs(y = "proportion")
+
+#====================Two Numerical Variables====================================
+# we Use Scatter Plots
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+
+#================Three or More variables =======================================
+## map species to color and island to shape for additional variables in scatterplot
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = island))
+
+
+
+
+
+
+
+
+
 
 
 
