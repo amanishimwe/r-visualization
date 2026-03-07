@@ -329,8 +329,28 @@ ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point()
 ggsave(filename = "penguin-plot.png")
 
+# **NB:** If you don’t specify the width and height in ggsave(), they will be taken from the dimensions of the current plotting device.
+# **For reproducible code, you should specify them.**
+# **You can learn more about ggsave() in the documentation.*
+
+#Run the following lines of code. Which of the two plots is saved as mpg-plot.png? Why?
+ggplot(mpg, aes(x = class)) +
+  geom_bar()
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+ggsave("mpg-plot.png")
 
 
+# Solution
+
+bar_plot <- ggplot(mpg, aes(x = class)) +
+  geom_bar()
+
+scatter_plot <- ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+
+ggsave("bar-plot.png", plot = bar_plot)
+ggsave("scatter-plot.png", plot = scatter_plot)
 
 
 
