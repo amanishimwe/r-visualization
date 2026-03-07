@@ -264,7 +264,70 @@ ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
 ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point(aes(color = species, shape = island))
 
+#================Facets=========================================================
+# facet_wrap() is used to split a plot into multiple panels based on a single categorical variable.
+# It takes a formula as its first argument, written as ~ variable_name.
+# Each category of the variable is displayed in a separate subplot
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = species)) +
+  facet_wrap(~island)
+#===============================================================================
+#======================UsingThe mpg data frame==================================
+#Mpg dataframeis bundled with the ggplot2 package contains 234 observations
+#collected by the US Environmental Protection Agency on 38 car models
+#1.0 Qn:Which variables in mpg are categorical? Which variables are numerical?
+?mpg
+# 1. Create a scatterplot of hwy vs displ from the mpg dataset,
+#then map another numerical variable to color, size, both color and size,
+#and shape, and explain how these aesthetics behave differently for categorical
+#vs numerical variables.
+View(mpg)
 
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+
+#Mapping a numerical variable (cyl) to color
+ggplot(mpg, aes(x = displ, y = hwy, color = cyl)) +
+  geom_point()
+
+#Mapping a numerical variable (cyl) to size
+ggplot(mpg, aes(x = displ, y = hwy, size = cyl)) +
+  geom_point()
+
+#Mapping a numerical variable (cyl) to both color and size
+ggplot(mpg, aes(x = displ, y = hwy, color = cyl, size = cyl)) +
+  geom_point()
+
+#Mapping a numerical variable (cyl) to shape
+ggplot(mpg, aes(x = displ, y = hwy, color = cyl, size = cyl, shape = cyl)) +
+  geom_point()
+
+#Q2.In the scatterplot of hwy vs. displ, what happens if you map a third variable to linewidth?
+ggplot(mpg, aes(x = displ, y = hwy,linewidth = cyl)) +
+  geom_point()
+
+# **NB:** The 'linewidth' aesthetic does not affect points in geom_point().
+# **To vary point thickness, use 'size' instead. 'linewidth' is only for line geoms like geom_line() or geom_smooth().**
+
+#Q3:Why does the following yield two separate legends? How would you fix it to combine the two legends?
+# Ans: Adding shape=species in labs
+ggplot(data = penguins,mapping = aes(x = bill_length_mm, y = bill_depth_mm,
+                                     color = species, shape = species))+
+  geom_point() +
+  labs(color = "Species", shape = "Species")
+
+#====================Questions on Stacked Graphs================================
+# Q4:Which question can you answer with the this stacked graph A?
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+# Q: Which question can you answer with B?
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+
+#==========================Saving the graphs====================================
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+ggsave(filename = "penguin-plot.png")
 
 
 
