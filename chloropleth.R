@@ -1,7 +1,10 @@
+#===============================================================================
+#Q2.Create a chloropleth (by county) of the median age for the corresponding state
+#===============================================================================
+
 install.packages("tidycensus")
 install.packages("sf")
 install.packages("viridis")
-
 library(tidycensus)
 library(sf)
 library(ggplot2)

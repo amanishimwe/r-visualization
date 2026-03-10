@@ -1,3 +1,9 @@
+
+#===============================================================================
+# Qn.  Choose a city in the USA, and plot an age pyramid for it
+#using the 2010 census data. Compare it with the state's capital.
+#==============================================================================
+
 setwd("/Users/alban/Documents/GSOC")
 install.packages("jsonlite")
 install.packages("tidyverse")
