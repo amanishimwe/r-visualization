@@ -60,6 +60,158 @@ flights |>
 # Use .keep_all = TRUE in distinct() to retain all other columns alongside the unique rows.
 flights |>
   distinct(origin, dest, .keep_all = TRUE)
+# Use count() instead of distinct() to tally occurrences, with sort = TRUE to return
+# results in descending order.
+flights |>
+  count(origin, dest, sort = TRUE)
+
+# =============================================================================
+#           Exercises
+# =============================================================================
+
+# Exercise 1: Using a single pipeline for each, filter flights that:
+#   a) Had an arrival delay of two or more hours
+view(flights)
+flights |> filter(arr_delay>120)
+#   b) Flew to Houston (IAH or HOU)
+flights |> filter(dest=='IAH' | dest == 'HOU')
+
+#   c) Were operated by United, American, or Delta
+flights |>
+  filter(carrier %in% c("UA", "AA", "DL"))
+#   d) Departed in summer (July, August, and September)
+flights |> filter(month %in% c(7,8,9) )
+#   e) Arrived more than two hours late but didn't leave late
+flights |>
+  filter(arr_delay > 120 & dep_time<=0)
+#   f) Were delayed by at least an hour but made up over 30 minutes in flight
+flights |>
+  filter(dep_delay >= 60 & dep_delay - arr_delay > 30)
+
+# Exercise 2: Sort flights to find those with the longest departure delays.
+#             Then find the flights that left earliest in the morning.
+flights |>
+  arrange(desc(dep_delay))
+# We get the earliest years first, then within a year, the earliest months, etc.
+flights |>
+  arrange(dep_time)
+
+# Exercise 3: Sort flights to find the fastest flights.
+#             Hint: try including a math calculation inside arrange().
+flights |>
+  arrange(air_time / distance) # sort by time per mile — lower = faster
+
+# Exercise 4: Was there a flight on every day of 2013?
+flights |>
+  distinct(year, month, day) |> # find all unique dates
+  count()                        # tally — 365 means a flight on every day of 2013
+
+# Exercise 5: Which flights traveled the farthest distance?
+#             Which traveled the least distance?
+
+# Farthest distance
+flights |>
+  arrange(desc(distance))
+
+# Least distance
+flights |>
+  arrange(distance)
+
+# Exercise 6: Does the order of filter() and arrange() matter when using both?
+#             Think about the results and how much work each function has to do.
+# So order doesn't affect the final result,
+#but putting filter() before arrange() is more efficient.
+
+# ==============================================================================
+#============================COLUMNS============================================
+# Four verbs modify columns without changing rows: mutate() adds derived columns,
+# select() picks which columns to keep, rename() renames them, and relocate() reorders them.
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60
+  )
+
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 1  # add new columns to the left side instead of the right
+  )
+# adding the new rows before day
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .after = day
+  )
+# only keep the columns that were used in the mutate function
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    hours = air_time / 60,
+    gain_per_hour = gain / hours,
+    .keep = "used"
+  )
+#===============================================================================
+#===============================================================================
+# Select columns by name:
+flights |>
+  select(year, month, day)
+#Select all columns between year and day (inclusive):
+flights |>
+  select(year:day)
+#Select all columns except those from year to day (inclusive):
+flights |>
+  select(!year:day)
+#Select all columns that are characters:
+flights |>
+  select(where(is.character))
+# There are a number of helper functions that you can use with select()
+#starts_with("abc"): matches names that begin with “abc”.
+#ends_with("xyz"): matches names that end with “xyz”.
+#contains("ijk"): matches names that contain “ijk”.
+#num_range("x", 1:3): matches x1, x2 and x3.
+#You can rename variables as you select() them by using =.
+# The new name appears on the left-hand side of the =,
+# and the old variable appears on the right-hand side:
+flights |>
+  select(tail_num = tailnum)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
