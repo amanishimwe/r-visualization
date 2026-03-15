@@ -177,9 +177,74 @@ flights |>
 # and the old variable appears on the right-hand side:
 flights |>
   select(tail_num = tailnum)
+flights |>
+  rename(tail_num = tailnum) # rename tailnum to tail_num, keeping all other columns
+
+# For bulk column name cleaning, janitor::clean_names() automatically standardizes
+flights |>
+  relocate(tailnum, air_time) # move time_hour and air_time to the front by default
+
+flights |>
+  relocate(year:dep_time, .after = time_hour) # move year through dep_time after time_hour
+
+flights |>
+  relocate(starts_with("arr"), .before = dep_time) # move all arr_ columns before dep_time
+# =============================================================================
+# 3.3.5 Exercises
+# =============================================================================
+
+# Exercise 1: Compare dep_time, sched_dep_time, and dep_delay.
+#             How would you expect these three numbers to be related?
+#             (Hint: dep_time - sched_dep_time should equal dep_delay)
+
+flights |>
+  select(dep_time, sched_dep_time, dep_delay)
 
 
+# Exercise 2: Brainstorm as many ways as possible to select
+#             dep_time, dep_delay, arr_time, and arr_delay from flights.
 
+flights |> select(dep_time, dep_delay, arr_time, arr_delay)  # by name
+flights |> select(starts_with("dep") | starts_with("arr"))   # by prefix
+flights |> select(contains("time") | contains("delay"))       # by keyword
+flights |> select(4, 6, 7, 9)                                 # by position
+
+
+# Exercise 3: What happens if you specify the same variable multiple times in select()?
+
+flights |> select(dep_time, dep_time, dep_time) # returns the column only once
+
+
+# Exercise 4: What does any_of() do? Why is it helpful with this vector?
+
+variables <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+flights |> select(any_of(variables)) # selects columns that exist, ignores those that don't
+
+
+# Exercise 5: Does this surprise you? How do select helpers handle upper/lower case?
+#             Use ignore.case = FALSE to make it case-sensitive.
+
+flights |> select(contains("TIME"))               # case-insensitive by default
+flights |> select(contains("TIME", ignore.case = FALSE)) # case-sensitive
+
+
+# Exercise 6: Rename air_time to air_time_min and move it to the front.
+
+flights |>
+  rename(air_time_min = air_time) |>
+  relocate(air_time_min)
+
+
+# Exercise 7: Why doesn't this work?
+#             select(tailnum) drops all other columns including arr_delay,
+#             so arrange() cannot find arr_delay to sort by.
+
+flights |>
+  select(tailnum) |>
+  arrange(arr_delay) # Error: arr_delay not found — it was dropped by select()
+
+# =============================================================================
 
 
 
