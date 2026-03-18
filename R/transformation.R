@@ -244,13 +244,92 @@ flights |>
   select(tailnum) |>
   arrange(arr_delay) # Error: arr_delay not found — it was dropped by select()
 
+#==============================================================================
+#==========================PIPE=================================================
+#This pipeline filters flights to Houston (IAH), calculates speed in mph, keeps only
+#relevant columns, and sorts by fastest speed — demonstrating the real power of the pipe.
+flights |>
+  filter(dest == "IAH") |> # step 1: keep only flights to Houston
+  mutate(speed = distance / air_time * 60) |> # step 2: calculate speed in miles per hour
+  select(year:day, dep_time, carrier, flight, speed) |> # step 3: keep only relevant columns
+  arrange(desc(speed))    # step 4: sort fastest flights to the top
+
+daily <- flights |>
+  group_by(year, month, day)
+daily
+#===============================================================================
+# If we didn't have pipe we would next the outputs of one function into another.
+arrange(
+  select(
+    mutate(
+      filter(
+        flights,
+        dest == "IAH"
+      ),
+      speed = distance / air_time * 60
+    ),
+    year:day, dep_time, carrier, flight, speed
+  ),
+  desc(speed)
+)
+# We could use a bunch of intermediate objects
+flights1 <- filter(flights, dest == "IAH")
+flights2 <- mutate(flights1, speed = distance / air_time * 60)
+flights3 <- select(flights2, year:day, dep_time, carrier, flight, speed)
+arrange(flights3, desc(speed))
+#==========working with groups==================================================
+#You can compute multiple summary statistics at once using summarize().
+#A particularly useful function is n(), which counts the number of rows in each group.
+flights |>
+  group_by(month) |>
+  summarise(avg_delay = mean(dep_delay,na.rm = TRUE),
+            n=n())
+#================Slice functions================================================
+# The slice_*() functions are useful for selecting specific rows within each group:
+# - slice_head(n = 1): returns the first row of each group
+# - slice_tail(n = 1): returns the last row of each group
+# - slice_min(x, n = 1): returns the row with the smallest value of column x
+# - slice_max(x, n = 1): returns the row with the largest value of column x
+# - slice_sample(n = 1): returns a random row from each group
+flights |>
+  group_by(dest) |>
+  slice_max(arr_delay, n = 1) |>
+  relocate(dest)
+#================Grouping by multiple variables=================================
+daily <- flights |>
+  group_by(year, month, day)
+daily
+
+daily_flights <- daily |>
+  summarize(n = n())
+
+daily_flights <- daily |>
+  summarize(
+    n = n(),
+    .groups = "drop_last"
+  )
+# =============================================================================
+# Per-operation grouping with .by (introduced in dplyr 1.1.0)
 # =============================================================================
 
+# Group by a single variable using .by inside summarize()
+flights |>
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE),
+    n = n(),
+    .by = month  # group by month within this operation only
+  )
 
+# Group by multiple variables using .by with c()
+flights |>
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE),
+    n = n(),
+    .by = c(origin, dest)  # group by origin and destination together
+  )
 
-
-
-
+# Note: .by groups only within the operation — no need for ungroup() afterwards,
+# unlike group_by() which applies grouping to all subsequent operations in the pipeline.
 
 
 
